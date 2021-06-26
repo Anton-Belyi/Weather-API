@@ -11,7 +11,7 @@ extension ViewController {
     func presentSearchAlertController(withTitle title: String?, message: String?, style: UIAlertController.Style ) {
         let ac = UIAlertController(title: title, message: message, preferredStyle: style)
         ac.addTextField { tf in
-            let cities = ["Moscow", "Rostov-on-Don", "Saint_Petersburg"]
+            let cities = ["Moscow", "Rostov-on-Don", "Saint Petersburg"]
             tf.placeholder = cities.randomElement()
         }
         let search = UIAlertAction(title: "Поиск", style: .default) { action in
