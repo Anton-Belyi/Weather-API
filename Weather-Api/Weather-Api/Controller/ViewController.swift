@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -16,6 +17,13 @@ class ViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     
     var networkManager = NetworkManager()
+    lazy var locationManager: CLLocationManager = {
+        let lm = CLLocationManager()
+        lm.delegate = self
+        lm.desiredAccuracy = kCLLocationAccuracyKilometer
+        lm.requestWhenInUseAuthorization()
+        return lm
+    }()
     
     
     //MARK: ViewDidLoad
@@ -23,20 +31,45 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        networkManager.fetchCurrent(city: "rostov-on-don") { currentWeather in
-            
+        networkManager.onCompletion = { currentWeather in
+            self.updateInterfaceWith(weather: currentWeather)
+        }
+  
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.requestLocation()
         }
     }
 
-    
-    
-    @IBAction func searchCity(_ sender: UIButton) {
-        presentSearchAlertController(withTitle: "Введите город", message: nil, style: .alert) { city in
-            self.networkManager.fetchCurrent(city: city) { currentWeather in
-                
-            }
+    func updateInterfaceWith(weather: CurrentWeather) {
+        DispatchQueue.main.async {
+            self.cityLabel.text = weather.cityName
+            self.temperatureLabel.text = weather.temperatureString
+            self.feelsLikeLabel.text = weather.feelsLiteTemperatureString
+            self.weatherIconImageView.image = UIImage(systemName: weather.systemIconNameString)
         }
     }
     
+    @IBAction func searchCity(_ sender: UIButton) {
+        presentSearchAlertController(withTitle: "Введите город", message: nil, style: .alert) { city in
+            self.networkManager.fetchCurrent(city: city)
+        }
+    }
+    
+}
+
+//MARK: //MARK: CLLocationManagerDelegate
+
+extension ViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        
+        networkManager.fetchCurrent(city: <#T##String#>)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error.localizedDescription)
+    }
 }
 
