@@ -51,7 +51,7 @@ class ViewController: UIViewController {
     
     @IBAction func searchCity(_ sender: UIButton) {
         presentSearchAlertController(withTitle: "Введите город", message: nil, style: .alert) { city in
-            self.networkManager.fetchCurrent(city: city)
+            self.networkManager.fetchCurrentWeather(forRequestType: .cityName(city: city))
         }
     }
     
@@ -65,7 +65,7 @@ extension ViewController: CLLocationManagerDelegate {
         let latitude = location.coordinate.latitude
         let longitude = location.coordinate.longitude
         
-        networkManager.fetchCurrent(city: <#T##String#>)
+        networkManager.fetchCurrentWeather(forRequestType: .coordinate(latitude: latitude, longitude: longitude))
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

@@ -30,7 +30,7 @@ struct CurrentWeather {
         case 701...781: return "smoke.fill"
         case 800: return "sun.min.ftll"
         case 801...804: return "cloud.fill"
-        default: return "nodign"
+        default: return "network"
         }
     }
     
